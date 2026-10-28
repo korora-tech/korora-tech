@@ -1,33 +1,18 @@
 # Korora Tech
 
+We build focused software for Linux desktops: native tools for everyday work, from launching apps and routing links to managing calendars and recording your screen.
+
 ## Projects
 
-- **[cidrrr](https://github.com/korora-tech/cidrrr)**
+- **[Antarctical](https://github.com/korora-tech/antarctical)** — A native Linux viewer for Google Calendar, with multiple accounts, month, week, day and agenda views, and desktop reminders.
 
-  A command-line tool that makes inspection of IPv4 and IPv6 CIDR blocks easier. Convert CIDR blocks into lists of IP addresses with various output options.
+- **[Chinstrap](https://github.com/korora-tech/chinstrap)** — A Linux recording studio for capturing screens, windows, cameras and microphones together, with optional on-device transcription.
 
-- **[temps](https://github.com/korora-tech/temps)**
+- **[Flipper](https://github.com/korora-tech/flipper)** — A browser and profile picker that routes links using local rules, so you can choose which browser and profile opens each link.
 
-  A Rust library for working with time and dates. Parse human-readable time expressions with support for multiple languages (English and German). Features include:
-  - Relative time parsing ("in 2 hours", "3 days ago")
-  - Day references and weekday specifications
-  - 12-hour and 24-hour time format support
-  - ISO 8601 date parsing
-  - Support for [chrono](https://crates.io/crates/chrono) and [jiff](https://crates.io/crates/jiff) libraries
+- **[Rockhopper](https://github.com/korora-tech/rockhopper)** — A Wayland launcher for apps, windows and commands, with emoji search and encrypted clipboard history.
 
-- **[dhd](https://github.com/korora-tech/dhd)**
-
-  Declarative Host Deployment - A TypeScript-based configuration management system for automating system setup and maintenance.
-
-  Features include:
-
-  - Declarative configuration using TypeScript modules
-  - DAG-based execution with automatic dependency resolution
-  - Multiple action types (file operations, package management, command execution)
-  - Interactive terminal UI for monitoring execution
-  - Powered by OpenTelemetry
-
-## Folks Behind Korora Tech
+## People
 
 - [David Flanagan](https://github.com/rawkode)
 - [Stefan Ruzitschka](https://github.com/icepuma)
