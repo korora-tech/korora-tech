@@ -1,0 +1,34 @@
+version = 5
+
+[infrastructure_providers."registry.terraform.io/cloudflare/cloudflare"]
+version = "5.28.1"
+schema_digest = "sha256:2859af705840b0fc832c8e1ad82107d53160c95f819963c7d58a362bb80902c4"
+
+[infrastructure_providers."registry.terraform.io/cloudflare/cloudflare".platforms]
+darwin_amd64 = "sha256:bef2ffbdb68569549fe432b550592e07456759a7288f84f7c37c9d933a493f54"
+darwin_arm64 = "sha256:219d464dd727c0e5c90a97b44aa5d7988acc4eec47f3684f7ecd006b17c46d9c"
+freebsd_amd64 = "sha256:2511f2380209c81121e6eb943d7e68d03602a4fcf4f0311dfc67e198179b9303"
+freebsd_arm64 = "sha256:a182f4aec86c74e9db4affa22323c5a21f5d92c1fcf91b934570753d04f4daf8"
+linux_amd64 = "sha256:2ae200482bf592cd703981c4d4fe87a52c0dfae81a70261295f59b1bb0d01a6c"
+linux_arm64 = "sha256:a39bb8624fb6c714e38bc0e632aae117a9fede5a18a248ab15dd1b60013c0324"
+windows_amd64 = "sha256:9fb5a295588351ce565515dc2a770047e8bab786a4a9665511ab9a9ca2db5f1b"
+windows_arm64 = "sha256:7df6fe6573379c2faf2e801fdbca58ac909266dbee604feaa993439b8616c9b3"
+
+[infrastructure_providers."registry.terraform.io/infisical/infisical"]
+version = "0.20.8"
+schema_digest = "sha256:277eac4e212a33c0fea50cbe6820f87b15e12090b26bd3e74eadc4b836bdb8c0"
+
+[infrastructure_providers."registry.terraform.io/infisical/infisical".platforms]
+darwin_amd64 = "sha256:339615fce01f28a486f369310398d8660339baeeef85b18718930e2b0145f255"
+darwin_arm64 = "sha256:b57ac06ee8d76d743d28a88083e9f255ae3b2abb93ac2c95f0c3546d98575b19"
+freebsd_386 = "sha256:b44bc15f16f2ed86b2d2658aa401a2f429056aa017c7c65f9405311fe9b438a3"
+freebsd_amd64 = "sha256:ad9b0110d22ccde2a4bb600de82517e3d50d4579fe8f8ded038c66f74b982645"
+freebsd_arm = "sha256:82e517346ad6e1417f35483d5281860c9df90e08ba0def1a5d5701258eae1b1b"
+freebsd_arm64 = "sha256:02c47a7a19003f83b40f3e055e6405d8efb26395a0549d49cb65176adb6b2a92"
+linux_386 = "sha256:4e0c6f43ec0569494e77812655c2177be8ac297873d0adc020bad0cf02b1ba00"
+linux_amd64 = "sha256:54261b1899c496421b48076929b707f9b8575f41d061121ce68edb9fe46f2020"
+linux_arm = "sha256:c557f99c5401ef61578b714708e46e8a6a348bb05d3e3bc7add1985a94ccf4c0"
+linux_arm64 = "sha256:3cfc5e352197249f2e65c07fd6a7c061544e7f17ccd2785176cf01b442857003"
+windows_386 = "sha256:339eeb31eba984b9fe9c3224044c1a370bc314fdca78dafaf508785726442744"
+windows_amd64 = "sha256:22f2cc8f876763943e6948dcad99201494c7cae626434f8a76ed2ee20e19aa5c"
+windows_arm64 = "sha256:811563a0d81ff41725c81d529746c45e25cdfbe8f31bf8f5043b80317fcd2833"

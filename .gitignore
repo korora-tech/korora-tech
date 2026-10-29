@@ -1,6 +1,12 @@
 .claude
 
+
 # Astro
 /node_modules/
 /dist/
 /.astro/
+
+# BEGIN cuenv infrastructure
+/cue.mod/gen/registry.terraform.io/cloudflare/cloudflare/
+/cue.mod/gen/registry.terraform.io/infisical/infisical/
+# END cuenv infrastructure
