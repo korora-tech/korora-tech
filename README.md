@@ -8,6 +8,8 @@ We build focused software for Linux desktops: native tools for everyday work, fr
 
 - **[Chinstrap](https://github.com/korora-tech/chinstrap)** — A Linux recording studio for capturing screens, windows, cameras and microphones together, with optional on-device transcription.
 
+- **[Eloquawk](https://github.com/korora-tech/eloquawk)** — A native Gmail client for Linux.
+
 - **[Flipper](https://github.com/korora-tech/flipper)** — A browser and profile picker that routes links using local rules, so you can choose which browser and profile opens each link.
 
 - **[Rockhopper](https://github.com/korora-tech/rockhopper)** — A Wayland launcher for apps, windows and commands, with emoji search and encrypted clipboard history.
