@@ -2,7 +2,7 @@ version = 5
 
 [infrastructure_providers."registry.terraform.io/cloudflare/cloudflare"]
 version = "5.28.1"
-schema_digest = "sha256:2859af705840b0fc832c8e1ad82107d53160c95f819963c7d58a362bb80902c4"
+schema_digest = "sha256:551fd6d313094f43ff7c7409a8b1a7ecd070ab2ff166fdf51db66c42366aa6dc"
 
 [infrastructure_providers."registry.terraform.io/cloudflare/cloudflare".platforms]
 darwin_amd64 = "sha256:bef2ffbdb68569549fe432b550592e07456759a7288f84f7c37c9d933a493f54"
@@ -16,7 +16,7 @@ windows_arm64 = "sha256:7df6fe6573379c2faf2e801fdbca58ac909266dbee604feaa993439b
 
 [infrastructure_providers."registry.terraform.io/infisical/infisical"]
 version = "0.20.8"
-schema_digest = "sha256:277eac4e212a33c0fea50cbe6820f87b15e12090b26bd3e74eadc4b836bdb8c0"
+schema_digest = "sha256:26c756a56d64885b895c90a511cdddef168baa3e82de05a828f06682f281d6d8"
 
 [infrastructure_providers."registry.terraform.io/infisical/infisical".platforms]
 darwin_amd64 = "sha256:339615fce01f28a486f369310398d8660339baeeef85b18718930e2b0145f255"
