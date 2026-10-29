@@ -5,6 +5,9 @@ import (
 	"registry.terraform.io/cloudflare/cloudflare:cloudflare_provider"
 	"registry.terraform.io/cloudflare/cloudflare/resources/cloudflare_account_token"
 	"registry.terraform.io/infisical/infisical:infisical_provider"
+	"registry.terraform.io/infisical/infisical/resources/infisical_identity"
+	"registry.terraform.io/infisical/infisical/resources/infisical_identity_oidc_auth"
+	"registry.terraform.io/infisical/infisical/resources/infisical_project_identity"
 	"registry.terraform.io/infisical/infisical/resources/infisical_secret"
 )
 
@@ -15,6 +18,8 @@ name: "korora-tech"
 let _accountId = "0aeb879de8e3cdde5fb3d413025222ce"
 
 let _zoneId = "8616ab6882fb4d01da13eb379f406f9a" // korora.tech
+
+let _infisicalOrgId = "ceffb723-21f4-4452-beea-56d25ed1f9d9"
 
 let _infisicalProjectId = "7c237571-6f1c-409d-b5e4-ea814d434217"
 
@@ -94,6 +99,42 @@ infrastructure: {
 					fromResource: "cloudflare_account_token.deploy_token"
 					attribute:    "value"
 				}
+			}
+		}
+
+		// GitHub Actions in the production environment of this repository log
+		// in to Infisical with OIDC and can only read this project's secrets.
+		github_actions: infisical_identity.#Resource & {
+			configuration: {
+				name:   "korora-tech-github-actions"
+				org_id: _infisicalOrgId
+				role:   "no-access"
+			}
+		}
+
+		github_actions_oidc: infisical_identity_oidc_auth.#Resource & {
+			configuration: {
+				identity_id: schema.#InfrastructureOutputReference & {
+					fromResource: "infisical_identity.github_actions"
+					attribute:    "id"
+				}
+				oidc_discovery_url: "https://token.actions.githubusercontent.com"
+				bound_issuer:       "https://token.actions.githubusercontent.com"
+				bound_subject:      "repo:korora-tech/korora-tech:environment:production"
+				bound_audiences: ["https://github.com/korora-tech"]
+				access_token_ttl:     600
+				access_token_max_ttl: 600
+			}
+		}
+
+		github_actions_project: infisical_project_identity.#Resource & {
+			configuration: {
+				identity_id: schema.#InfrastructureOutputReference & {
+					fromResource: "infisical_identity.github_actions"
+					attribute:    "id"
+				}
+				project_id: _infisicalProjectId
+				roles: [{role_slug: "viewer"}]
 			}
 		}
 	}
