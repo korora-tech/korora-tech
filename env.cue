@@ -2,6 +2,7 @@ package cuenv
 
 import (
 	"github.com/cuenv/cuenv/schema"
+	xContributors "github.com/cuenv/cuenv/contrib/contributors"
 	"registry.terraform.io/cloudflare/cloudflare:cloudflare_provider"
 	"registry.terraform.io/cloudflare/cloudflare/resources/cloudflare_account_token"
 	"registry.terraform.io/infisical/infisical:infisical_provider"
@@ -86,6 +87,36 @@ tasks: {
 		dependsOn: [build]
 	}
 }
+
+// GitHub-hosted runners don't ship Bun.
+let _setupBun = schema.#Contributor & {
+	id: "setupBun"
+	when: always: true
+	tasks: [{
+		id:       "setupBun.install"
+		label:    "Setup Bun"
+		priority: 5
+		provider: github: uses: "oven-sh/setup-bun@v2"
+	}]
+}
+
+config: ci: cuenv: {
+	source:  "release"
+	version: "0.61.0"
+}
+
+ci: providers: ["github"]
+
+// Deploys log in to Infisical with GitHub OIDC, so the repository stores no
+// Infisical credential. The identity is infisical_identity.github_actions;
+// see the OIDC resources below for what it may read.
+ci: contributors: [
+	_setupBun,
+	xContributors.#CuenvRelease,
+	xContributors.#BunWorkspace,
+	xContributors.#Infisical,
+	xContributors.#InfisicalOidc,
+]
 
 ci: pipelines: default: {
 	environment: "production"
