@@ -18,3 +18,14 @@ We build focused software for Linux desktops: native tools for everyday work, fr
 
 - [David Flanagan](https://github.com/rawkode)
 - [Stefan Ruzitschka](https://github.com/icepuma)
+
+## Website development
+
+The website is built with [Astro](https://astro.build/). To run it locally:
+
+```sh
+bun install
+bun run dev
+```
+
+Edit `src/pages/index.astro` to update the project directory. Run `bun run build` to generate the static site in `dist/`, and `bun run preview` to preview the build.
