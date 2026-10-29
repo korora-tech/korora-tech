@@ -44,6 +44,57 @@ env: {
 		policies: _infrastructure
 	}
 
+	// Deploys use the scoped korora-tech token from Infisical, never the root
+	// token, and only the deploy task can read it.
+	environment: production: {
+		CLOUDFLARE_API_TOKEN: {
+			value: schema.#InfisicalSecret & {
+				projectId:   _infisicalProjectId
+				environment: "production"
+				secretName:  "CLOUDFLARE_API_TOKEN"
+			}
+			policies: [{allowTasks: ["deploy"]}]
+		}
+	}
+}
+
+let _t = tasks
+
+let _sources = [
+	"astro.config.mjs",
+	"bun.lock",
+	"package.json",
+	"public/**",
+	"src/**",
+	"tsconfig.json",
+]
+
+tasks: {
+	build: schema.#Task & {
+		hermetic: false
+		command:  "bun"
+		args: ["run", "build"]
+		inputs: _sources
+		outputs: ["dist/**"]
+	}
+
+	deploy: schema.#Task & {
+		hermetic: false
+		command:  "bunx"
+		args: ["wrangler@4.155.0", "deploy"]
+		inputs: ["wrangler.jsonc"]
+		dependsOn: [build]
+	}
+}
+
+ci: pipelines: default: {
+	environment: "production"
+	when: {
+		branch: ["main"]
+		defaultBranch: true
+		manual:        true
+	}
+	tasks: [_t.deploy]
 }
 
 infrastructure: {

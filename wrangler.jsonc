@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "korora-tech",
+	"compatibility_date": "2026-10-29",
+	"assets": {
+		"directory": "./dist"
+	},
+	"workers_dev": false,
+	"preview_urls": false,
+	"routes": [
+		{
+			"pattern": "korora.tech",
+			"custom_domain": true
+		}
+	]
+}
