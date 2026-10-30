@@ -110,7 +110,7 @@ let _setupBun = schema.#Contributor & {
 
 config: ci: cuenv: {
 	source:  "release"
-	version: "0.62.0"
+	version: "0.63.1"
 }
 
 ci: providers: ["github"]
