@@ -220,12 +220,12 @@ infrastructure: {
 				}
 				oidc_discovery_url: "https://token.actions.githubusercontent.com"
 				bound_issuer:       "https://token.actions.githubusercontent.com"
-				// GitHub issues immutable subjects for these repositories: owner and
-				// repository carry their numeric IDs. Infisical accepts any subject
-				// in this comma-separated list.
-				bound_subject: strings.Join([for repo, id in _deployers {
-					"repo:korora-tech@125489144/\(repo)@\(id):environment:production"
-				}], ",")
+				// The production environment of a korora-tech repository (GitHub
+				// issues immutable subjects here, carrying numeric IDs), limited to
+				// this repository and the product websites by repository ID. A list
+				// of their exact subjects exceeds Infisical's length limit.
+				bound_subject: "repo:korora-tech@125489144/*:environment:production"
+				bound_claims: repository_id: strings.Join([for repo, id in _deployers {"\(id)"}], ",")
 				bound_audiences: ["https://github.com/korora-tech"]
 				access_token_ttl:     600
 				access_token_max_ttl: 600
@@ -285,8 +285,7 @@ infrastructure: {
 	}
 }
 
-// Product websites on *.korora.tech, by GitHub repository ID (GitHub issues
-// immutable OIDC subjects for these repositories).
+// Product websites on *.korora.tech, by GitHub repository ID.
 let _websites = {
 	rockhopper: 1429625470
 	flipper:    1431601073
