@@ -6,6 +6,8 @@ import (
 	"registry.terraform.io/cloudflare/cloudflare:cloudflare_provider"
 	"registry.terraform.io/cloudflare/cloudflare/resources/cloudflare_account_token"
 	"registry.terraform.io/infisical/infisical:infisical_provider"
+	"registry.terraform.io/integrations/github:github_provider"
+	"registry.terraform.io/integrations/github/resources/github_actions_environment_secret"
 	"registry.terraform.io/infisical/infisical/resources/infisical_identity"
 	"registry.terraform.io/infisical/infisical/resources/infisical_identity_oidc_auth"
 	"registry.terraform.io/infisical/infisical/resources/infisical_project_identity"
@@ -25,7 +27,7 @@ let _infisicalOrgId = "ceffb723-21f4-4452-beea-56d25ed1f9d9"
 let _infisicalProjectId = "7c237571-6f1c-409d-b5e4-ea814d434217"
 
 // Root (all-access) Cloudflare token. Only used to provision the scoped
-// deploy token below and to reach the D1 state database.
+// deploy token below.
 _cloudflareRootToken: schema.#OnePasswordRef & {ref: "op://Employee/Cloudflare/api-tokens/all-access"}
 
 let _infrastructure = [{allowInfrastructure: ["plan", "apply", "import", "destroy"]}]
@@ -38,6 +40,12 @@ env: {
 	}
 	INFISICAL_UNIVERSAL_AUTH_CLIENT_ID: {
 		value: schema.#OnePasswordRef & {ref: "op://Employee/Infisical/machine-identity/client-id"}
+		policies: _infrastructure
+	}
+	// The GitHub provider manages this repository's Actions secrets with the
+	// operator's `gh` login.
+	GITHUB_TOKEN: {
+		value: schema.#ExecSecret & {command: "gh", args: ["auth", "token"]}
 		policies: _infrastructure
 	}
 	INFISICAL_UNIVERSAL_AUTH_CLIENT_SECRET: {
@@ -102,7 +110,7 @@ let _setupBun = schema.#Contributor & {
 
 config: ci: cuenv: {
 	source:  "release"
-	version: "0.61.0"
+	version: "0.62.0"
 }
 
 ci: providers: ["github"]
@@ -129,16 +137,22 @@ ci: pipelines: default: {
 }
 
 infrastructure: {
-	// Shared with rawkode-academy; state is keyed by module path.
-	state: d1: {
-		accountId:  _accountId
-		databaseId: "ceacd475-c672-4a64-8f4c-cbd454c08135"
-		token:      _cloudflareRootToken
+	// The R2 bucket that holds all cuenv state; objects are keyed by module
+	// path.
+	state: s3: {
+		bucket:   "cuenv-state"
+		region:   "auto"
+		endpoint: "https://\(_accountId).r2.cloudflarestorage.com"
+		accessKeyId: schema.#OnePasswordRef & {ref: "op://Employee/Cloudflare/cuenv-state/access-key"}
+		secretAccessKey: schema.#OnePasswordRef & {ref: "op://Employee/Cloudflare/cuenv-state/secret-key"}
 	}
 
 	providers: {
 		cloudflare: cloudflare_provider.#Provider
 		infisical:  infisical_provider.#Provider
+		github: github_provider.#Provider & {
+			configuration: owner: "korora-tech"
+		}
 	}
 
 	resources: {
@@ -202,7 +216,9 @@ infrastructure: {
 				}
 				oidc_discovery_url: "https://token.actions.githubusercontent.com"
 				bound_issuer:       "https://token.actions.githubusercontent.com"
-				bound_subject:      "repo:korora-tech/korora-tech:environment:production"
+				// GitHub issues immutable subjects for this repository: owner and
+				// repository carry their numeric IDs.
+				bound_subject: "repo:korora-tech@125489144/korora-tech@607889684:environment:production"
 				bound_audiences: ["https://github.com/korora-tech"]
 				access_token_ttl:     600
 				access_token_max_ttl: 600
@@ -217,6 +233,20 @@ infrastructure: {
 				}
 				project_id: _infisicalProjectId
 				roles: [{role_slug: "viewer"}]
+			}
+		}
+
+		// The workflow logs in as that identity; scoped to the production
+		// environment, like the identity's OIDC binding.
+		github_actions_identity_id: github_actions_environment_secret.#Resource & {
+			configuration: {
+				repository:  "korora-tech"
+				environment: "production"
+				secret_name: "INFISICAL_MACHINE_IDENTITY_ID"
+				value: schema.#InfrastructureOutputReference & {
+					fromResource: "infisical_identity.github_actions"
+					attribute:    "id"
+				}
 			}
 		}
 	}
