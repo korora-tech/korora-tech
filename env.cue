@@ -1,6 +1,8 @@
 package cuenv
 
 import (
+	"strings"
+
 	"github.com/cuenv/cuenv/schema"
 	xContributors "github.com/cuenv/cuenv/contrib/contributors"
 	"registry.terraform.io/cloudflare/cloudflare:cloudflare_provider"
@@ -8,6 +10,7 @@ import (
 	"registry.terraform.io/infisical/infisical:infisical_provider"
 	"registry.terraform.io/integrations/github:github_provider"
 	"registry.terraform.io/integrations/github/resources/github_actions_environment_secret"
+	"registry.terraform.io/integrations/github/resources/github_repository_environment"
 	"registry.terraform.io/infisical/infisical/resources/infisical_identity"
 	"registry.terraform.io/infisical/infisical/resources/infisical_identity_oidc_auth"
 	"registry.terraform.io/infisical/infisical/resources/infisical_project_identity"
@@ -198,8 +201,9 @@ infrastructure: {
 			}
 		}
 
-		// GitHub Actions in the production environment of this repository log
-		// in to Infisical with OIDC and can only read this project's secrets.
+		// GitHub Actions in the production environment of this repository and
+		// of the product websites log in to Infisical with OIDC and can only
+		// read this project's secrets.
 		github_actions: infisical_identity.#Resource & {
 			configuration: {
 				name:   "korora-tech-github-actions"
@@ -216,9 +220,12 @@ infrastructure: {
 				}
 				oidc_discovery_url: "https://token.actions.githubusercontent.com"
 				bound_issuer:       "https://token.actions.githubusercontent.com"
-				// GitHub issues immutable subjects for this repository: owner and
-				// repository carry their numeric IDs.
-				bound_subject: "repo:korora-tech@125489144/korora-tech@607889684:environment:production"
+				// GitHub issues immutable subjects for these repositories: owner and
+				// repository carry their numeric IDs. Infisical accepts any subject
+				// in this comma-separated list.
+				bound_subject: strings.Join([for repo, id in _deployers {
+					"repo:korora-tech@125489144/\(repo)@\(id):environment:production"
+				}], ",")
 				bound_audiences: ["https://github.com/korora-tech"]
 				access_token_ttl:     600
 				access_token_max_ttl: 600
@@ -249,5 +256,42 @@ infrastructure: {
 				}
 			}
 		}
+
+		// The product websites deploy with the same Cloudflare token, as the
+		// same identity, from a production environment of their own.
+		for repo, _ in _websites {
+			"\(repo)_production": github_repository_environment.#Resource & {
+				configuration: {
+					repository:  repo
+					environment: "production"
+				}
+			}
+
+			"\(repo)_identity_id": github_actions_environment_secret.#Resource & {
+				configuration: {
+					repository: repo
+					environment: schema.#InfrastructureOutputReference & {
+						fromResource: "github_repository_environment.\(repo)_production"
+						attribute:    "environment"
+					}
+					secret_name: "INFISICAL_MACHINE_IDENTITY_ID"
+					value: schema.#InfrastructureOutputReference & {
+						fromResource: "infisical_identity.github_actions"
+						attribute:    "id"
+					}
+				}
+			}
+		}
 	}
 }
+
+// Product websites on *.korora.tech, by GitHub repository ID (GitHub issues
+// immutable OIDC subjects for these repositories).
+let _websites = {
+	rockhopper: 1429625470
+	flipper:    1431601073
+	chinstrap:  1428546312
+}
+
+// Every repository whose production environment deploys to Cloudflare.
+let _deployers = {"korora-tech": 607889684, _websites}
